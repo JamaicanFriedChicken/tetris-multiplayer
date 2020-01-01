@@ -4,8 +4,20 @@ const context = canvas.getContext("2d");
 context.scale(20, 20);
 
 function arenaSweep() {
-    for (let y = arena.length - 1; y < 0; --y) {
-        for (let x = 0; x < arena[y].length; ++x) {}
+    let rowCount = 1;
+    outer: for (let y = arena.length - 1; y > 0; --y) {
+        for (let x = 0; x < arena[y].length; ++x) {
+            if (arena[y][x] === 0) {
+                continue outer;
+            }
+        }
+
+        const row = arena.splice(y, 1)[0].fill(0);
+        arena.unshift(row);
+        ++y;
+
+        player.score += rowCount * 10;
+        rowCount *= 2;
     }
 }
 
@@ -39,9 +51,9 @@ function createMatrix(width, height) {
 function createPiece(type) {
     if (type === "T") {
         return [
-            [0, 1, 0],
+            [0, 0, 0],
             [1, 1, 1],
-            [0, 0, 0]
+            [0, 1, 0]
         ];
     } else if (type === "O") {
         return [
@@ -82,16 +94,6 @@ function createPiece(type) {
     }
 }
 
-// Draws matrix as a block.
-function draw() {
-    // clears canvas before drawing a new block.
-    context.fillStyle = "#000"; // black
-    context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
-
-    drawMatrix(arena, { x: 0, y: 0 });
-    drawMatrix(player.matrix, player.position);
-}
-
 // Draws matrix.
 function drawMatrix(matrix, offset) {
     matrix.forEach((row, y) => {
@@ -102,6 +104,16 @@ function drawMatrix(matrix, offset) {
             }
         });
     });
+}
+
+// Draws matrix as a block.
+function draw() {
+    // clears canvas before drawing a new block.
+    context.fillStyle = "#000"; // black
+    context.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+    drawMatrix(arena, { x: 0, y: 0 });
+    drawMatrix(player.matrix, player.position);
 }
 
 // Copies all the matrix values of the player to the arena
@@ -123,16 +135,18 @@ function playerDrop() {
         player.position.y--;
         merge(arena, player);
         playerReset();
+        arenaSweep();
+        updateScore();
         // // resets tetris block after it touches ground.
         // player.position.y = 0;
     }
     dropCounter = 0;
 }
 
-function playerMove(direction) {
-    player.position.x += direction;
+function playerMove(offset) {
+    player.position.x += offset;
     if (collide(arena, player)) {
-        player.position.x -= direction;
+        player.position.x -= offset;
     }
 }
 
@@ -146,6 +160,8 @@ function playerReset() {
 
     if (collide(arena, player)) {
         arena.forEach(row => row.fill(0));
+        player.score = 0;
+        updateScore();
     }
 }
 
@@ -186,12 +202,13 @@ let dropInterval = 1000; // unit: ms
 
 function update(time = 0) {
     const deltaTime = time - lastTime;
-    lastTime = time;
 
     dropCounter += deltaTime;
     if (dropCounter > dropInterval) {
         playerDrop();
     }
+
+    lastTime = time;
 
     draw();
     requestAnimationFrame(update);
@@ -208,12 +225,9 @@ const colours = [
     "#3877FF"
 ];
 
-const arena = createMatrix(12, 20);
-
-const player = {
-    position: { x: 0, y: 0 },
-    matrix: createPiece("L")
-};
+function updateScore() {
+    document.getElementById("score").innerText = player.score;
+}
 
 // Listens if a key on the keyboard is pressed.
 document.addEventListener("keydown", event => {
@@ -230,5 +244,14 @@ document.addEventListener("keydown", event => {
     }
 });
 
+const arena = createMatrix(12, 20);
+
+const player = {
+    position: { x: 0, y: 0 },
+    matrix: null,
+    score: 0
+};
+
 playerReset();
+updateScore();
 update();
