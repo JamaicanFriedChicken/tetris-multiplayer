@@ -1,3 +1,5 @@
+myTheme = new sound("slow_tetris_soundtrack.mp3");
+mySound = new sound("tetris_soundeffect.mp3");
 const canvas = document.getElementById("tetris");
 const context = canvas.getContext("2d");
 
@@ -13,6 +15,7 @@ function arenaSweep() {
         }
 
         const row = arena.splice(y, 1)[0].fill(0);
+        mySound.play();
         arena.unshift(row);
         ++y;
 
@@ -196,6 +199,22 @@ function rotate(matrix, direction) {
     }
 }
 
+// In charge of setting the music for the game.
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function() {
+        this.sound.play();
+    };
+    this.stop = function() {
+        this.sound.pause();
+    };
+}
+
 let lastTime = 0;
 let dropCounter = 0;
 let dropInterval = 1000; // unit: ms
@@ -252,6 +271,7 @@ const player = {
     score: 0
 };
 
+myTheme.play();
 playerReset();
 updateScore();
 update();
