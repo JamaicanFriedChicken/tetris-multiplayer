@@ -44,11 +44,33 @@ function createPiece(type) {
     }
 }
 
+class Sound {
+    constructor(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function() {
+            this.sound.play();
+        };
+        this.stop = function() {
+            this.sound.pause();
+        };
+    }
+}
+
+myTheme = new Sound("slow_tetris_soundtrack.mp3");
+
 const tetri = [];
 
+// Selects all classes "player" and processes em as a single line function
 const playerElements = document.querySelectorAll(".player");
 [...playerElements].forEach(element => {
     const tetris = new Tetris(element);
+    // myTheme.play();
+    // stores each tetris user into an array
     tetri.push(tetris);
 });
 

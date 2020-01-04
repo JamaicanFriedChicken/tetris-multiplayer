@@ -5,6 +5,8 @@ class Tetris {
         this.context = this.canvas.getContext("2d");
         this.context.scale(20, 20);
 
+        // Show the next block coming into the game.
+
         this.arena = new Arena(12, 20);
         this.player = new Player(this);
 

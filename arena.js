@@ -5,6 +5,8 @@ class Arena {
             matrix.push(new Array(w).fill(0));
         }
         this.matrix = matrix;
+
+        this.soundEffect = new Sound("tetris_soundeffect.mp3");
     }
 
     clear() {
@@ -48,6 +50,7 @@ class Arena {
             }
 
             const row = this.matrix.splice(y, 1)[0].fill(0);
+            this.soundEffect.play();
             this.matrix.unshift(row);
             ++y;
 
