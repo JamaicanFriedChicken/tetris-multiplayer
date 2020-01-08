@@ -6,7 +6,7 @@ class Arena {
         }
         this.matrix = matrix;
 
-        this.soundEffect = new Sound("tetris_soundeffect.mp3");
+        this.soundEffect = new Sound("sound/tetris_soundeffect.mp3");
     }
 
     clear() {

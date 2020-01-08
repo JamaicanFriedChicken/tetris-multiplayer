@@ -1,48 +1,5 @@
-function createPiece(type) {
-    if (type === "T") {
-        return [
-            [0, 0, 0],
-            [1, 1, 1],
-            [0, 1, 0]
-        ];
-    } else if (type === "O") {
-        return [
-            [2, 2],
-            [2, 2]
-        ];
-    } else if (type === "L") {
-        return [
-            [0, 3, 0],
-            [0, 3, 0],
-            [0, 3, 3]
-        ];
-    } else if (type === "J") {
-        return [
-            [0, 4, 0],
-            [0, 4, 0],
-            [4, 4, 0]
-        ];
-    } else if (type === "I") {
-        return [
-            [0, 5, 0, 0],
-            [0, 5, 0, 0],
-            [0, 5, 0, 0],
-            [0, 5, 0, 0]
-        ];
-    } else if (type === "S") {
-        return [
-            [0, 6, 6],
-            [6, 6, 0],
-            [0, 0, 0]
-        ];
-    } else if (type === "Z") {
-        return [
-            [7, 7, 0],
-            [0, 7, 7],
-            [0, 0, 0]
-        ];
-    }
-}
+// Youtube link for the tetris tutorial 2 player:
+// https://www.youtube.com/watch?v=JJo5JpbuTTs&list=PLS8HfBXv9ZWW49tOAbvxmKy17gpsqWXaX&index=2
 
 class Sound {
     constructor(src) {
@@ -61,25 +18,20 @@ class Sound {
     }
 }
 
-myTheme = new Sound("slow_tetris_soundtrack.mp3");
+myTheme = new Sound("sound/slow_tetris_soundtrack.mp3");
 
-const tetri = [];
-
-// Selects all classes "player" and processes em as a single line function
-const playerElements = document.querySelectorAll(".player");
-[...playerElements].forEach(element => {
-    const tetris = new Tetris(element);
-    // myTheme.play();
-    // stores each tetris user into an array
-    tetri.push(tetris);
-});
+const tetrisManager = new TetrisManager(document);
+const localTetris = tetrisManager.createPlayer();
+const connectionManager = new ConnectionManager();
+connectionManager.connect("ws://localhost:9000");
 
 const keyListener = event => {
     [
-        [65, 68, 81, 69, 83],
-        [72, 75, 89, 73, 74]
+        // ASCII number for keys
+        [65, 68, 81, 69, 83], // a, d, q, e, s
+        [72, 75, 89, 73, 74] // h, k, y, i, j
     ].forEach((key, index) => {
-        const player = tetri[index].player;
+        const player = localTetris.player;
         if (event.type === "keydown") {
             if (event.keyCode === key[0]) {
                 player.move(-1);
