@@ -22,7 +22,10 @@ myTheme = new Sound("sound/slow_tetris_soundtrack.mp3");
 
 const tetrisManager = new TetrisManager(document);
 const localTetris = tetrisManager.createPlayer();
-const connectionManager = new ConnectionManager();
+localTetris.element.classList.add("local");
+localTetris.run();
+
+const connectionManager = new ConnectionManager(tetrisManager);
 connectionManager.connect("ws://localhost:9000");
 
 const keyListener = event => {

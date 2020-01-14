@@ -10,6 +10,10 @@ class Tetris {
         this.arena = new Arena(12, 20);
         this.player = new Player(this);
 
+        this.player.events.listen("score", score => {
+            this.updateScore(score);
+        });
+
         this.colors = [
             null,
             "#FF0D72",
@@ -22,16 +26,15 @@ class Tetris {
         ];
 
         let lastTime = 0;
-        const update = (time = 0) => {
+        this._update = (time = 0) => {
             const deltaTime = time - lastTime;
             lastTime = time;
 
             this.player.update(deltaTime);
 
             this.draw();
-            requestAnimationFrame(update);
+            requestAnimationFrame(this._update);
         };
-        update();
 
         this.updateScore(0);
     }
@@ -53,6 +56,30 @@ class Tetris {
                 }
             });
         });
+    }
+
+    run() {
+        this._update();
+    }
+
+    serialize() {
+        return {
+            arena: {
+                matrix: this.arena.matrix
+            },
+            player: {
+                matrix: this.player.matrix,
+                pos: this.player.pos,
+                score: this.player.score
+            }
+        };
+    }
+
+    unserialize(state) {
+        this.arena = Object.assign(state.arena);
+        this.player = Object.assign(state.player);
+        this.updateScore(this.player.score);
+        this.draw();
     }
 
     updateScore(score) {
